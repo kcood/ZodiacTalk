@@ -1,15 +1,19 @@
 package com.lark.firstProject.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lark.firstProject.config.WebClientConfig;
+import com.lark.firstProject.dto.GptTestDto;
 import com.lark.firstProject.service.GenerateFortuneService;
 import com.lark.firstProject.service.GetFortuneService;
 import com.lark.firstProject.service.TestService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.BufferedReader;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/astro")
@@ -18,6 +22,9 @@ public class AppController {
     private final GenerateFortuneService generateFortuneService;
     private final GetFortuneService getFortuneService;
     private final TestService testService;
+
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/getRecentFortune")
     public void getRecentFortune(){
@@ -37,6 +44,26 @@ public class AppController {
         System.out.println("Json Test Executed !!");
         System.out.println("HTTP Method: " + request.getMethod());
         return ResponseEntity.ok(testService.jsonTest());
+    }
+
+    @PostMapping("/gptTest")
+    public ResponseEntity<?> gptTest(@RequestBody String appMessage) throws JsonProcessingException {
+
+        return ResponseEntity.ok(generateFortuneService.getChatResponse(appMessage));
+    }
+
+    @PostMapping("/appConnectTest")
+    public ResponseEntity<?> appConnectTest(@RequestBody String message) throws Exception {
+        System.out.println("RECEIVED FROM APP !!");
+        System.out.println("received:" + message);
+
+        GptTestDto dto = objectMapper.readValue(message, GptTestDto.class);
+        dto.setMessage("received: " + dto.getMessage());
+        System.out.println("dto:" + dto.getMessage());
+
+        return ResponseEntity.ok(objectMapper.writeValueAsString(dto));
+
+
     }
 
 }

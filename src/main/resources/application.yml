@@ -1,5 +1,8 @@
 spring:
 
+  config:
+    import:  "application-key.yml"
+
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test
@@ -17,7 +20,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-#server:
-#  address: 0.0.0.0
-#  port: 8080
